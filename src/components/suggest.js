@@ -1,3 +1,5 @@
+// 
+
 import { getDatabase, onValue,ref } from 'firebase/database';
 import React, { Component } from 'react'
 import firedb from './firebaseconfig';
@@ -23,7 +25,7 @@ constructor(){
             snapshot.forEach((childSnapshot)=>{
                 const key = childSnapshot.key;
                 const ingredients = childSnapshot.val().ingredients;
-                obj= {"name": key, "ingredients": ingredients};
+                obj= {"name": key, "ingredients": ingredients.toString()};
                 records.push(obj);
                 
             }
@@ -43,20 +45,21 @@ constructor(){
   render() {
 
    const searchdata=()=>{
-        const query = this.state.ingredient.toUpperCase();
+        const query = this.state.ingredient.toUpperCase().split("+").sort().toString();
+        console.log(query)
         const database = this.state.componenttable;
         console.log(database);
-    let records=[];
-        database.forEach((element)=>{
-            element.ingredients.forEach(
-                (childelement)=>{
-                    if(childelement===query){
+        let records=[];
+        var i=0
+        for(;i<database.length;i++){
+            const element = database[i].ingredients
+            
+            if(element===query){
                         
-                        records.push(element);
-                    }
-                }
-            )
-        })
+                records.push(database[i]);
+            }
+        }
+        
         console.log(records);
         this.setState({...this.state,displayarr:records});
     }
@@ -72,7 +75,7 @@ constructor(){
       return(
         <>
         <li>Name: {element.name}</li>
-        <ul>{element.ingredients.map((element)=>{return(
+        <ul>{element.ingredients.split(",").map((element)=>{return(
             <li>{element}</li>)
         })}</ul>
         
